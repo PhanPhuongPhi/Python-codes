@@ -1,0 +1,393 @@
+import math
+import discord
+from discord.ext import commands
+
+TOKEN = 'Your Discord token'
+
+intents = discord.Intents.default()
+intents.message_content = True
+# intents.typing = False
+# intents.presences = False
+intents.messages = True
+
+client = commands.Bot(command_prefix="#", intents=intents)
+
+@client.event
+async def on_ready():
+    print(f'{client.user} has connected to Discord!')
+
+@client.command()
+async def hello(ctx):
+    await ctx.send('Xin chào.') 
+    await ctx.send('Chào mừng bạn đến với Discord.')
+    await ctx.send('Tôi có thể giúp gì được cho bạn hôm nay?')
+
+@client.command()
+async def Help(ctx):
+    if ctx.message.content.startswith("Help"):
+        await ctx.send("Đây là những gì tôi có thể giúp bạn:")
+
+@client.command()
+async def calculator(ctx):
+    await ctx.send("Nhập số bạn muốn chọn (từ 1 đến 19):\n"
+                   "1. Cộng\n"
+                   "2. Trừ\n"
+                   "3. Nhân\n"
+                   "4. Chia\n"
+                   "5. Giải phương trình bậc 2\n"
+                   "6. Tìm USCLN và BSCNN\n"
+                   "7. Phân tính 1 số thành các thừa số nguyên tố\n"
+                   "8. Tính giai thừa\n"
+                   "9. Tính lũy thừa\n"
+                   "10. Tính sin\n"
+                   "11. Tính cos\n"
+                   "12. Tính tan\n"
+                   "13. Tính cotan\n"
+                   "14. Tính Logarit của cơ số a (a != 10)\n"
+                   "15. Tính Logarit của cơ số 10\n"
+                   "16. Tính Logarit tự nhiên\n"
+                   "17. Tính tổ hợp chập b của a phần tử\n"
+                   "18. Tính chỉnh hợp chập b của a phần tử")
+
+    def check(m):
+        return m.author == ctx.author and m.content.isdigit() and 1 <= int(m.content) <= 1919
+
+    while True:
+        try:
+            user_choice = await client.wait_for("message", check=check, timeout=60)
+            value = int(user_choice.content)
+            
+            if value == 1:
+                await press_1(ctx)
+            elif value == 2:                           
+                await press_2(ctx)
+            elif value == 3:                            
+                await press_3(ctx)
+            elif value == 4:
+                await press_4(ctx)
+            elif value == 5:
+                await press_5(ctx)
+            elif value == 6:
+                await press_6(ctx)
+            elif value == 7:
+                await press_7(ctx)
+            elif value == 8:
+                await press_8(ctx)
+            elif value == 9:
+                await press_9(ctx)
+            elif value == 10:
+                await press_10(ctx)
+            elif value == 11:
+                await press_11(ctx)
+            elif value == 12:
+                await press_12(ctx)
+            elif value == 13:
+                await press_13(ctx)
+            elif value == 14:
+                await press_14(ctx)
+            elif value == 15:
+                await press_15(ctx)
+            elif value == 16:
+                await press_16(ctx)
+            elif value == 17:
+                await press_17(ctx)
+            elif value == 18:
+                await press_18(ctx)
+            elif value == 19:
+                await press_19(ctx)
+                break
+            else:
+                await ctx.send("Lựa chọn không hợp lệ. Vui lòng chọn từ 1 đến 19.")
+        except TimeoutError:
+            await ctx.send("Thời gian phản hồi quá lâu! Kết thúc tính toán.")
+            break 
+
+@client.command()
+async def press_1(ctx):    #Phép cộng
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        add_result = a + b
+        await ctx.send(f"a + b = {add_result}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_2(ctx):    #Phép trừ
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        substract_result_1 = a - b
+        substract_result_2 = b - a
+        await ctx.send(f"a - b = {substract_result_1}")
+        await ctx.send(f"b - a = {substract_result_2}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_3(ctx):    #Phép nhân
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        multiply_result = a * b
+        await ctx.send(f"a * b = {multiply_result}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_4(ctx):    #Phép chia
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a == 0 or b == 0:
+        await ctx.send("Không thể chia cho 0!")
+    elif a is not None and b is not None:
+        divide_result_1 = a / b
+        divide_result_2 = b / a
+        await ctx.send(f"a / b = {divide_result_1}")
+        await ctx.send(f"b / a = {divide_result_2}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_5(ctx):    #Giải phương trình bậc 2
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số c: ")
+    c = await get_input_of_type(float, ctx)
+    if a is not None and b is not None and c is not None:
+        delta = b**2 - 4 * a * c
+        if delta > 0:
+            await ctx.send("Phương trình có 2 nghiệm phân biệt.")
+            x1 = (-b + math.sqrt(delta)) / (2 * a)
+            x2 = (-b - math.sqrt(delta)) / (2 * a)
+            await ctx.send(f"x1 = {x1}")
+            await ctx.send(f"x2 = {x2}")
+        elif delta == 0:
+            await ctx.send("Phương trình có nghiệm kép.")
+            x = (-b) / (2 * a)
+            await ctx.send(f"x1 = x2 = {x}")
+        else:
+            await ctx.send("Phương trình vô nghiệm.")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_6(ctx):    #Tìm USCLN và BSCNN
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        x = a
+        y = b
+        while x > 0 and y > 0:
+            if x > y:
+                x -= y
+            else:
+                y -= x
+        uscln = x + y
+        bscnn = (a * b) / uscln
+        await ctx.send(f'USCLN của 2 số {a} và {b} là {uscln}')
+        await ctx.send(f'BSCNN của 2 số {a} và {b} là {bscnn}')
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_7(ctx):    #Phân tích thành các thừa số nguyên tố
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    if a is not None:
+        def prime(a):
+            pns = []
+            b = 2
+            while a > 1:
+                if a % b == 0:
+                    pns.append(b)
+                    a /= b
+                else:
+                    b += 1
+            return pns
+        results = prime(a)
+        await ctx.send(f'Phân tích số {a} thành các thừa số nguyên tố:{results}')
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_8(ctx):    #Tính giai thừa
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(int, ctx)
+    if a is not None:
+        fact = 1
+        for x in range(1, a + 1):
+            fact *= x
+        await ctx.send(f'Giai thừa của {a} = {fact}')
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_9(ctx):    #Tính lũy thừa
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        await ctx.send(f"a ^ b = {math.pow(a, b)}")
+        await ctx.send(f"b ^ a = {math.pow(b, a)}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_10(ctx):    #Tính sin
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        c = a * math.pi / b
+        if b != 0:
+            await ctx.send(f"sin({a} * pi / {b}) = {math.sin(c)}")            
+        else:
+            await ctx.send("Math Error!")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_11(ctx):    #Tính cos
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        c = a * math.pi / b
+        if b != 0:
+            await ctx.send(f"cos({a} * pi / {b}) = {math.cos(c)}")
+        else:
+            await ctx.send("Math Error!")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_12(ctx):    #Tính tan
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        c = a * math.pi / b
+        if b != 0 and b!= 2:
+            await ctx.send(f"tan({a} * pi / {b}) = {math.tan(c)}")
+        else:
+            await ctx.send("Math Error!")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+    
+@client.command()
+async def press_13(ctx):    #Tính cotan
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        c = a * math.pi / b
+        if b != 0 and b!= 1:
+            await ctx.send(f"cot({a} * pi / {b}) = {1 / math.tan(c)}")
+        else:
+            await ctx.send("Math Error!")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_14(ctx):    #Tính Logarit của cơ số a (a != 10)
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(float, ctx)
+    if a is not None and b is not None:
+        if b <= 0:
+            await ctx.send("Số b bạn nhập vào không hợp lệ")
+        else:
+            await ctx.send(f"Logarit của {b} với cơ số {a} là: {math.log(b, a)}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_15(ctx):    #Tính Logarit cơ số 10
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    if a is not None:
+        if a <= 0:
+            await ctx.send("Số a bạn nhập vào không hợp lệ")
+        else:
+            await ctx.send(f"Logarit của {a} với cơ số 10 là: {math.log10(a)}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_16(ctx):    #Tính Logarit tự nhiên 
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(float, ctx)
+    if a is not None:
+        if a <= 0:
+            await ctx.send("Số a bạn nhập vào không hợp lệ")
+        else:
+            await ctx.send(f"Logarit tự nhiên của {a} là: {math.log(a)}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_17(ctx):    #Tính tổ hợp chập b của a phần tử
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(int, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(int, ctx)
+    if a is not None:
+        def to_hop(a, b):
+            if b == 0 or b == a:
+                return 1
+            return to_hop(a - 1, b - 1) + to_hop(a - 1, b)
+
+        await ctx.send(f"C({a}, {b}) = {to_hop(a, b)}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_18(ctx):    #Tính chỉnh hợp chập b của a phần tử
+    await ctx.send("Nhập số a: ")
+    a = await get_input_of_type(int, ctx)
+    await ctx.send("Nhập số b: ")
+    b = await get_input_of_type(int, ctx)
+    if a is not None:
+        def chinh_hop(a, b):
+            if b == 0 or b == a:
+                return 1
+            return a * chinh_hop(a - 1, b - 1)
+
+        await ctx.send(f"({a}, {b}) = {chinh_hop(a, b)}")
+    else:
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào.")
+
+@client.command()
+async def press_19(ctx):
+    await ctx.send("Kết thúc tính toán.")
+    
+# Helper function to get user input of a specific type
+async def get_input_of_type(data_type, ctx):
+    try:
+        msg = await client.wait_for("message", check=lambda m: m.author == ctx.author, timeout=60)  
+        return data_type(msg.content)
+    except (ValueError, TimeoutError):
+        await ctx.send("Đã xảy ra lỗi khi nhận đầu vào. Vui lòng thử lại.")
+        return None
+
+
+client.run(TOKEN)
